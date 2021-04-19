@@ -15,16 +15,20 @@ class WeatherPresenter(private val view: WeatherContract.View, private val conte
     lateinit var model:WeatherContract.Model
 
     override fun init() {
-        model = WeatherModelImpl(context)
-    }
-
-    override fun handleTemperatureResponse(weatherModel: WeatherModel?) {
-        TODO("Not yet implemented")
+        model = WeatherModelImpl(context, this)
     }
 
     override fun getWeather(location: Location) {
         if (location != null) {
             model.fetchWeatherReport(location.latitude.toString(), location.longitude.toString())
         }
+    }
+
+    override fun sendWeatherReportToPresenter(model: WeatherModel?) {
+        view.sendWeatherReport(model)
+    }
+
+    override fun failResponse() {
+        view.handleErrorView()
     }
 }

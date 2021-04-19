@@ -10,21 +10,18 @@ import com.example.weatherapp.data.WeatherModel
 interface WeatherContract  {
 
     interface View {
-        fun onInitView()
-        fun handleWeatherView(showWeatherView: Boolean)
-        fun handleErrorView(showErrorView: Boolean)
-        fun setCityCurrentTemperature(cityName: String?, temperature: String?)
+        fun handleErrorView()
+        fun sendWeatherReport(model: WeatherModel?)
     }
 
     interface Presenter {
         fun init()
-        fun handleTemperatureResponse(weatherModel: WeatherModel?)
         fun getWeather(location:Location)
+        fun sendWeatherReportToPresenter(model: WeatherModel?)
+        fun failResponse()
     }
 
     interface Model {
-        fun fetchInvalidCityMessage(): String?
-        fun getFormattedDate(inputDateString: String?): String?
         fun fetchWeatherReport(toString: String, toString1: String)
     }
 }

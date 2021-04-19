@@ -8,12 +8,16 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.weatherapp.R
 import com.example.weatherapp.WeatherContract
+import com.example.weatherapp.data.WeatherModel
 import com.example.weatherapp.presenter.WeatherPresenter
 
 /**
@@ -24,6 +28,9 @@ class MainActivity : AppCompatActivity(), LocationListener, WeatherContract.View
     private lateinit var locationManager: LocationManager
     lateinit var activity: MainActivity
     lateinit var presenter: WeatherContract.Presenter
+    lateinit var loading:ProgressBar;
+    lateinit var tvCityName:AppCompatTextView
+    lateinit var tvCityTemp:AppCompatTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,22 +38,24 @@ class MainActivity : AppCompatActivity(), LocationListener, WeatherContract.View
         setContentView(R.layout.activity_main)
         presenter = WeatherPresenter(this, applicationContext)
         presenter.init()
+        onInitView()
     }
 
-    override fun onInitView() {
-        TODO("Not yet implemented")
+    fun onInitView() {
+        loading = findViewById<ProgressBar>(R.id.loading)
+        loading.visibility = View.INVISIBLE
+        tvCityName = findViewById(R.id.tv_cite_name)
+        tvCityTemp = findViewById(R.id.tv_cite_temp)
     }
 
-    override fun handleWeatherView(showWeatherView: Boolean) {
-        TODO("Not yet implemented")
+    override fun handleErrorView() {
+        loading.visibility = View.GONE
     }
 
-    override fun handleErrorView(showErrorView: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setCityCurrentTemperature(cityName: String?, temperature: String?) {
-        TODO("Not yet implemented")
+    override fun sendWeatherReport(model: WeatherModel?) {
+        loading.visibility = View.GONE
+        tvCityName.text = model?.getName()
+        tvCityTemp.text = model?.getMain()?.getTemp().toString() + 0x00B0.toChar() + "C"
     }
 
     override fun onResume() {
@@ -68,6 +77,7 @@ class MainActivity : AppCompatActivity(), LocationListener, WeatherContract.View
 
     override fun onLocationChanged(location: Location) {
         presenter.getWeather(location)
+        loading.visibility = View.VISIBLE
         Log.d("Latitude ", location.latitude.toString() + " Longitude " + location.longitude)
     }
 
