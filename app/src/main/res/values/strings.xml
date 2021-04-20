@@ -5,4 +5,11 @@
     <string name="default_city">Bengaluru</string>
     <string name="retry">Retry</string>
     <string name="invalid_city">Invalid City</string>
+    <string name="min_temp">Min Temp</string>
+    <string name="max_temp">Max Temp</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="cloud_desc">Cloud</string>
+    <string name="cent"> C</string>
+    <string name="met_sec"> m/sec</string>
+
 </resources>

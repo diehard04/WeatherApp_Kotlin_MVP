@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.weatherapp.R
 import com.example.weatherapp.WeatherContract
+import com.example.weatherapp.data.WeatherInfoModel
 import com.example.weatherapp.data.WeatherModel
 import com.example.weatherapp.presenter.WeatherPresenter
 
@@ -31,6 +32,10 @@ class MainActivity : AppCompatActivity(), LocationListener, WeatherContract.View
     lateinit var loading:ProgressBar;
     lateinit var tvCityName:AppCompatTextView
     lateinit var tvCityTemp:AppCompatTextView
+    lateinit var tvMinTemp:AppCompatTextView
+    lateinit var tvMaxTemp:AppCompatTextView
+    lateinit var tvWindSpeed:AppCompatTextView
+    lateinit var tvCloudDesc:AppCompatTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +48,27 @@ class MainActivity : AppCompatActivity(), LocationListener, WeatherContract.View
 
     fun onInitView() {
         loading = findViewById<ProgressBar>(R.id.loading)
-        loading.visibility = View.INVISIBLE
+        loading.visibility = View.GONE
         tvCityName = findViewById(R.id.tv_cite_name)
         tvCityTemp = findViewById(R.id.tv_cite_temp)
+        tvMinTemp = findViewById(R.id.tv_min_temp)
+        tvMaxTemp = findViewById(R.id.tv_max_temp)
+        tvWindSpeed = findViewById(R.id.tv_wind_speed)
+        tvCloudDesc = findViewById(R.id.tv_cloud_desc)
     }
 
     override fun handleErrorView() {
         loading.visibility = View.GONE
     }
 
-    override fun sendWeatherReport(model: WeatherModel?) {
+    override fun sendWeatherReport(model: WeatherInfoModel?) {
         loading.visibility = View.GONE
-        tvCityName.text = model?.getName()
-        tvCityTemp.text = model?.getMain()?.getTemp().toString() + 0x00B0.toChar() + "C"
+        tvCityName.text = model?.getCityName()
+        tvCityTemp.text = model?.getTemp() + 0x00B0.toChar() + resources.getString(R.string.cent)
+        tvMinTemp.text = model?.getMinTemp() + 0x00B0.toChar() + resources.getString(R.string.cent)
+        tvMaxTemp.text = model?.getMaxTemp() + 0x00B0.toChar() + resources.getString(R.string.cent)
+        tvWindSpeed.text = model?.getWindSpeed() +  resources.getString(R.string.met_sec)
+        tvCloudDesc.text = model?.getCloudDesc()
     }
 
     override fun onResume() {
@@ -76,8 +89,8 @@ class MainActivity : AppCompatActivity(), LocationListener, WeatherContract.View
     }
 
     override fun onLocationChanged(location: Location) {
-        presenter.getWeather(location)
         loading.visibility = View.VISIBLE
+        presenter.getWeather(location)
         Log.d("Latitude ", location.latitude.toString() + " Longitude " + location.longitude)
     }
 
