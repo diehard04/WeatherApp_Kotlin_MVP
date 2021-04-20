@@ -1,5 +1,4 @@
 package com.example.weatherapp.model
-
 import android.content.Context
 import android.util.Log
 import com.example.weatherapp.WeatherContract
@@ -21,7 +20,6 @@ class WeatherModelImpl(private val context: Context, private val presenter: Weat
 
     override fun fetchWeatherReportFromNetwork(latitude: String, longitude: String) {
         val apiInterface: ApiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-
         val call: Call<WeatherModel> = apiInterface.getWeatherReport(latitude, longitude, "metric", Constant.API_KEY)
 
         call.enqueue(object : retrofit2.Callback<WeatherModel> {
@@ -34,7 +32,6 @@ class WeatherModelImpl(private val context: Context, private val presenter: Weat
                 weatherInfoModel.setMaxTemp(model.getMain()?.getTempMax()?.toString())
                 weatherInfoModel.setWindSpeed(model.getWind()?.getSpeed()?.toString())
                 weatherInfoModel.setCloudDesc(model.getWeather()?.get(0)?.getDescription())
-
                 saveIntoDataBase(weatherInfoModel)
                 Log.d("onResponse= ", response.toString() + "")
                 presenter.sendWeatherReportToPresenter(weatherInfoModel)
@@ -42,7 +39,6 @@ class WeatherModelImpl(private val context: Context, private val presenter: Weat
 
             override fun onFailure(call: Call<WeatherModel>, t: Throwable) {
                 Log.d("onFailure = ", t.message + "")
-
                 //loggedInUser.value = t.message
             }
         })
@@ -70,10 +66,7 @@ class WeatherModelImpl(private val context: Context, private val presenter: Weat
             if (status > -1) {
                 Log.d("saveIntoDataBase ", "record save")
             }
-
         }
         Log.d(TAG, " saveIntoDataBase " + databaseHandler.getCurrentSavedTime())
     }
-
-
 }
