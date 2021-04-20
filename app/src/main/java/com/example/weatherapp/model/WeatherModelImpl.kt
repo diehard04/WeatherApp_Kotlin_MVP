@@ -19,7 +19,7 @@ import retrofit2.Response
 class WeatherModelImpl(private val context: Context, private val presenter: WeatherContract.Presenter) : WeatherContract.Model {
     val TAG: String = WeatherInfoModel::class.java.name
 
-    override fun fetchWeatherReport(latitude: String, longitude: String) {
+    override fun fetchWeatherReportFromNetwork(latitude: String, longitude: String) {
         val apiInterface: ApiInterface = ApiClient.getClient().create(ApiInterface::class.java)
 
         val call: Call<WeatherModel> = apiInterface.getWeatherReport(latitude, longitude, "metric", Constant.API_KEY)
@@ -49,25 +49,30 @@ class WeatherModelImpl(private val context: Context, private val presenter: Weat
     }
 
     override fun getCurrentSavedTime(): String? {
-        val databaseHandler: DatabaseHandler= DatabaseHandler(context)
+        val databaseHandler: DatabaseHandler = DatabaseHandler(context)
         return databaseHandler.getCurrentSavedTime()
     }
 
-    override fun getSavedWeatherReport(): WeatherInfoModel? {
-        val databaseHandler: DatabaseHandler= DatabaseHandler(context)
+    override fun getSavedWeatherReportFromDB(): WeatherInfoModel? {
+        val databaseHandler: DatabaseHandler = DatabaseHandler(context)
         return databaseHandler.getSavedWeatherReport()
     }
 
     private fun saveIntoDataBase(weatherInfoModel: WeatherInfoModel) {
-        val databaseHandler: DatabaseHandler= DatabaseHandler(context)
+        val databaseHandler: DatabaseHandler = DatabaseHandler(context)
         if (weatherInfoModel != null) {
-            val status = databaseHandler.addWeatherReport(weatherInfoModel, System.currentTimeMillis().toString())
-            if(status > -1){
-                Log.d("saveIntoDataBase ","record save")
+            val status: Long
+            if (!databaseHandler.isRecordExist()) {
+                status = databaseHandler.addWeatherReport(weatherInfoModel, System.currentTimeMillis().toString())
+            } else {
+                status = databaseHandler.updateWeatherReport(weatherInfoModel, System.currentTimeMillis().toString()).toLong()
+            }
+            if (status > -1) {
+                Log.d("saveIntoDataBase ", "record save")
             }
 
         }
-        Log.d(TAG , " saveIntoDataBase "+databaseHandler.getCurrentSavedTime())
+        Log.d(TAG, " saveIntoDataBase " + databaseHandler.getCurrentSavedTime())
     }
 
 

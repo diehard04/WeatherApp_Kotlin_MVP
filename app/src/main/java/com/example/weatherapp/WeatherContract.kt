@@ -23,9 +23,9 @@ interface WeatherContract  {
     }
 
     interface Model {
-        fun fetchWeatherReport(toString: String, toString1: String)
+        fun fetchWeatherReportFromNetwork(toString: String, toString1: String)
         fun getCurrentSavedTime(): String?
-        fun getSavedWeatherReport():WeatherInfoModel?
+        fun getSavedWeatherReportFromDB():WeatherInfoModel?
     }
 }
 

@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.example.weatherapp.data.WeatherInfoModel
 
 /**
@@ -63,6 +64,24 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         return success
     }
 
+    fun isRecordExist():Boolean {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try{
+            cursor = db.query(TABLE_CONTACTS, null, null, null, null, null, null, null);
+            Log.d("Cursor Count : " , cursor.getCount().toString())
+            if(cursor.getCount()>0){
+                return true
+            }
+        }catch (e: SQLiteException) {
+            print(e.message)
+        }
+        finally {
+            cursor?.close();
+        }
+        return false
+    }
+
     //method to read data
     fun getSavedWeatherReport():WeatherInfoModel{
         val model= WeatherInfoModel()
@@ -84,6 +103,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 model.setCloudDesc(cursor.getString(cursor.getColumnIndex(KEY_CLOUD)))
             } while (cursor.moveToNext())
         }
+        cursor.close()
         return model
     }
 
@@ -105,21 +125,25 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 } while (cursor.moveToNext())
             }
         }
+        cursor?.close()
         return savedTime
     }
 
-//    //method to update data
-//    fun updateEmployee(emp: EmpModelClass):Int{
-//        val db = this.writableDatabase
-//        val contentValues = ContentValues()
-//        contentValues.put(KEY_ID, emp.userId)
-//        contentValues.put(KEY_NAME, emp.userName) // EmpModelClass Name
-//        contentValues.put(KEY_EMAIL,emp.userEmail ) // EmpModelClass Email
-//
-//        // Updating Row
-//        val success = db.update(TABLE_CONTACTS, contentValues,"id="+emp.userId,null)
-//        //2nd argument is String containing nullColumnHack
-//        db.close() // Closing database connection
-//        return success
-//    }
+    //method to update data
+    fun updateWeatherReport(model: WeatherInfoModel, currentTime: String?): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_CITY_NAME, model.getCityName())
+        contentValues.put(KEY_CITY_TEMP, model.getTemp())
+        contentValues.put(KEY_MIN_TEMP, model.getMinTemp())
+        contentValues.put(KEY_MAX_TEMP, model.getMaxTemp())
+        contentValues.put(KEY_CLOUD, model.getCloudDesc())
+        contentValues.put(KEY_WIND_SPEED, model.getWindSpeed())
+        contentValues.put(KEY_CURRENT_TIME, currentTime)
+        // Updating Row
+        val success = db.update(TABLE_CONTACTS, contentValues,null,null)
+        //2nd argument is String containing nullColumnHack
+        db.close() // Closing database connection
+        return success
+    }
 }
